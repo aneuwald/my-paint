@@ -46,4 +46,11 @@ const MenuContainer = styled.div`
 	margin-top: 10px;
 
 	user-select: none;
+
+	@media (max-width: 750px) {
+		transform: scale(0.5) translate(-50%);
+	}
+
+
+
 `

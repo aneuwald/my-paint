@@ -27,14 +27,28 @@ function App() {
   }, [lineColor, lineOpacity, lineWidth])
 
   useEffect(() => {
-    canvasRef.current.addEventListener('mousemove', (e) => {
-      setMousePosition({left: e.pageX, top: e.pageY});
-  });
+    const canvas = canvasRef.current
+    canvas.addEventListener('mousemove', (e) => {
+      setMousePosition({ left: e.pageX, top: e.pageY});
+    });
+
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+    }, { passive: false });
   }, [])
 
   const startDrawing = (e) => {
+    if (e.touches) e.preventDefault();
+    const rect = e.target.getBoundingClientRect();
     ctxRef.current.beginPath()
-    ctxRef.current.moveTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY)
+    ctxRef.current.moveTo(
+      e.nativeEvent.offsetX || e.touches[0].pageX - rect.left,
+      e.nativeEvent.offsetY || e.touches[0].pageY - rect.top
+    )
     setIsDrawing(true)
   }
 
@@ -46,12 +60,23 @@ function App() {
   const draw = (e) => {
     if (!isDrawing)
       return
-    ctxRef.current.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY)
+    if (e.touches) e.preventDefault();
+    const rect = e.target.getBoundingClientRect();
+    ctxRef.current.lineTo(
+      e.nativeEvent.offsetX || e.touches[0].pageX - rect.left,
+      e.nativeEvent.offsetY || e.touches[0].pageY - rect.top
+    )
     ctxRef.current.stroke()
   }
 
   const handleResetCanvas = () => {
     ctxRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+  }
+
+  function isTouchDevice() {
+    return (('ontouchstart' in window) ||
+       (navigator.maxTouchPoints > 0) ||
+       (navigator.msMaxTouchPoints > 0));
   }
 
   return (
@@ -65,23 +90,26 @@ function App() {
         />
         <Canvas
           onMouseDown={startDrawing}
+          onTouchStart={startDrawing}
           onMouseUp={endDrawing}
+          onTouchUp={endDrawing}
           onMouseMove={draw}
+          onTouchMove={draw}
           ref={canvasRef}
           width={window.innerWidth}
           height={window.innerHeight - 65}
         />
       </DrawArea>
-      <MouseCursor
-        style={{ 
-          left: mousePosition.left, 
+      {!isTouchDevice() && <MouseCursor
+        style={{
+          left: mousePosition.left,
           top: mousePosition.top,
           backgroundColor: lineColor,
           width: lineWidth + 'px',
           height: lineWidth + 'px',
           opacity: lineOpacity + 0.1
         }}
-      />
+      />}
     </AppContainer>
   );
 }
@@ -95,7 +123,6 @@ const AppContainer = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  background-image: linear-gradient( 120deg, #fdfbfb 0%, #ebedee 100%);
 `
 
 const DrawArea = styled.div`
