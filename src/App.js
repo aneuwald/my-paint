@@ -8,9 +8,9 @@ function App() {
   const canvasRef = useRef(null)
   const ctxRef = useRef(null)
   const [isDrawing, setIsDrawing] = useState(false)
-  const [lineWidth, setLineWidth] = useState(5)
+  const [lineWidth, setLineWidth] = useState(3)
   const [lineColor, setLineColor] = useState('black')
-  const [lineOpacity, setLineOpacity] = useState(0.5)
+  const [lineOpacity, setLineOpacity] = useState(1)
 
   const [mousePosition, setMousePosition] = useState({ left: 0, top: 0 })
 

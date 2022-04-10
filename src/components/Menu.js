@@ -13,9 +13,9 @@ const Menu = ({ setLineColor, setLineWidth,
 			/>
 			<label>Brush Width </label>
 			<input
-				defaultValue={5}
+				defaultValue={3}
 				type="range"
-				min="3"
+				min="1"
 				max="20"
 				onChange={(e) => {setLineWidth(e.target.value);}}
 			/>
@@ -24,7 +24,7 @@ const Menu = ({ setLineColor, setLineWidth,
 				type="range"
 				min="1"
 				max="100"
-				defaultValue={50}
+				defaultValue={100}
 				onChange={(e) => {setLineOpacity(e.target.value / 100);}}
 			/>
 			<button onClick={resetCanvas}>Clean Draw</button>
